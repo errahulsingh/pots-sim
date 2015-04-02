@@ -7,11 +7,11 @@ import scipy.io.wavfile as sciwav
 FS = 44100
 
 def _load_wave(f):
-    rate, data = sciwav.read(f.stream)
+    rate, data = sciwav.read(f)
     return data
 
 def _load_text(f):
-    data = np.loadtxt(f.stream, dtype='int16')
+    data = np.loadtxt(f, dtype='int16')
     return data
 
 def _dump_wave(data):

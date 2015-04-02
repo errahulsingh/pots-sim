@@ -15,7 +15,7 @@ def normalize(data, maxamp=1):
 
 def pots(data, snr=30):
     data = np.array(data)
-    
+
     # ensure mono
     if data.ndim != 1:
         data = data[:,0]
@@ -33,6 +33,7 @@ def pots(data, snr=30):
         data = sig.lfilter(b, a, data)
 
     # add band-limited noise (filtered white noise)
+    np.random.seed(0)
     noise = 10**(-snr/20) * ((np.random.random(size=data.shape) * 2) - 1)
     for b, a in biquads['noiseband']:
         noise = sig.lfilter(b, a, noise)
