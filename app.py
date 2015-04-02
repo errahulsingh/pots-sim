@@ -12,8 +12,28 @@ app.debug = True
 def root():
     return fl.render_template('root.html')
 
+@app.route('/pots/json', methods=['GET', 'POST'])
+def pots_processor_json():
+    if fl.request.method == 'POST':
+        data = np.array(fl.request.get_json(cache=False))
+        try:
+            data = filters.pots(data)
+            reply = {'data': data.tolist(), 'rate': 44100}
+            status_code = 200
+
+        except Exception as e:
+            reply = {'error': str(e)}
+            status_code = 400
+
+        resp = fl.jsonify(**reply)
+        resp.status_code = status_code
+        return resp
+
+    else:
+        return fl.redirect('/pots')
+
 @app.route('/pots', methods=['GET', 'POST'])
-def pots_process():
+def pots_processor():
     if fl.request.method == 'POST':
         file = fl.request.files['file']
         fext = file.filename.split('.')[-1]

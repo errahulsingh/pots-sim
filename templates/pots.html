@@ -13,20 +13,27 @@
 <hr>
 <h2>Input Requirements</h2>
 <ul>
-  <li>32 MB maximum file size</li>
+  <li>32 MB maximum</li>
 </ul>
 
 <h3>WAV</h3>
 <ul>
   <li>File must end with <code>.wav</code></li>
-  <li>44.1 kHz sample rate (forced)</li>
-  <li>Mono/1-channel (forced)</li>
-  <li>16-bit (fails otherwise)</li>
+  <li>44.1 kHz sample rate (blindly assumed)</li>
+  <li>Mono/1-channel</li>
+  <li>16-bit linear</li>
 </ul>
 
 <h3>Text</h3>
 <ul>
   <li>File must end with <code>.txt</code></li>
-  <li>One 16-bit integer per line (-32768 to 32767)</li>
+  <li>One number per line (they will be normalized and quantized to 16-bit)</li>
 </ul>
+
+<h3>JSON</h3>
+<ul>
+  <li><code>POST</code> a 1-D array of numbers to <code>/pots/json</code>.</li>
+  <li>Reply is an object with a <code>"data"</code> field which hopefully has what you want.</li>
+</ul>
+
 {% endblock %}
