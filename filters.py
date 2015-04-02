@@ -14,6 +14,8 @@ def normalize(data, maxamp=1):
     data *= maxamp / max(abs(data))
 
 def pots(data, snr=30):
+    data = np.array(data)
+    
     # ensure mono
     if data.ndim != 1:
         data = data[:,0]

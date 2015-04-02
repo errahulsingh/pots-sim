@@ -16,9 +16,7 @@ filtersets = {
         {'func': sig.butter, 'N': 4, 'fn': 5000, 'btype': 'low'},
     ],
     'noiseband': [
-        {'func': sig.butter, 'N': 2, 'fn': 300, 'btype': 'high'},
-        {'func': sig.butter, 'N': 2, 'fn': 4000, 'btype': 'low'},
-        {'func': sig.cheby2, 'N': 4, 'fn': 4500, 'rs': 20, 'btype': 'low'},
+        {'func': sig.butter, 'N': 4, 'fn': 4000, 'btype': 'low'},
     ],
 }
 

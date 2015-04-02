@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import io
 
 import numpy as np
@@ -29,13 +30,13 @@ def load(f, ext):
     try:
         return DP[ext]['load'](f)
     except KeyError:
-        raise ValueError()
+        raise ValueError('Unsupported file format')
 
 def dump(data, ext):
     try:
         return DP[ext]['dump'](data)
     except KeyError:
-        raise ValueError()
+        raise ValueError('Unsupported file format')
 
 DP = {
     'wav': {'load': _load_wave, 'dump': _dump_wave},

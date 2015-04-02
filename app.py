@@ -1,4 +1,5 @@
-import numpy as np
+from __future__ import absolute_import, division, print_function
+
 import flask as fl
 
 import aio
@@ -15,13 +16,13 @@ def root():
 @app.route('/pots/json', methods=['GET', 'POST'])
 def pots_processor_json():
     if fl.request.method == 'POST':
-        data = np.array(fl.request.get_json(cache=False))
+        data = fl.request.get_json(cache=False)
         try:
             data = filters.pots(data)
             reply = {'data': data.tolist(), 'rate': 44100}
             status_code = 200
 
-        except Exception as e:
+        except ValueError as e:
             reply = {'error': str(e)}
             status_code = 400
 
@@ -41,7 +42,7 @@ def pots_processor():
         try:
             data = aio.load(file, ext=fext)
         except ValueError as e:
-            return fl.abort(415)
+            return str(e), 400
 
         data = filters.pots(data)
         buf, mimetype = aio.dump(data, ext=fext)
