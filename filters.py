@@ -6,6 +6,7 @@ import numpy as np
 import scipy.signal as sig
 
 MAXINT16 = 2**15 - 1
+FS = 44100
 
 with open('biquads.json', 'r') as f:
     biquads = json.load(f)
@@ -28,12 +29,17 @@ def pots(data, snr=30):
         np.around(data, out=data)
     normalize(data)
 
+    # pad start and end
+    leader_len = np.random.randint(0.1 * FS, 0.4 * FS)
+    trailer_len = 0.5 * FS - leader_len
+    data = np.concatenate([np.zeros(leader_len), data, np.zeros(trailer_len)])
+
     # do filtering
     for b, a in biquads['signal']:
         data = sig.lfilter(b, a, data)
 
     # add band-limited noise (filtered white noise)
-    np.random.seed(0)
+    #np.random.seed(0)
     noise = 10**(-snr/20) * ((np.random.random(size=data.shape) * 2) - 1)
     for b, a in biquads['noiseband']:
         noise = sig.lfilter(b, a, noise)
