@@ -8,16 +8,18 @@ import scipy.signal as sig
 
 FS = 44100
 
-filtersets = {
-    'signal': [
-        {'func': sig.butter, 'N': 2, 'fn': 200, 'btype': 'high'},
-        {'func': sig.butter, 'N': 2, 'fn': 300, 'btype': 'high'},
-        {'func': sig.cheby2, 'N': 8, 'fn': 3900, 'rs': 50, 'btype': 'low'},
-        {'func': sig.butter, 'N': 4, 'fn': 5000, 'btype': 'low'},
-    ],
-    'noiseband': [
-        {'func': sig.butter, 'N': 4, 'fn': 4000, 'btype': 'low'},
-    ],
+filtergroups = {
+    'pots': {
+        'signal': [
+            {'func': sig.butter, 'N': 2, 'fn': 200, 'btype': 'high'},
+            {'func': sig.butter, 'N': 2, 'fn': 300, 'btype': 'high'},
+            {'func': sig.cheby2, 'N': 8, 'fn': 3900, 'rs': 50, 'btype': 'low'},
+            {'func': sig.butter, 'N': 4, 'fn': 5000, 'btype': 'low'},
+        ],
+        'noiseband': [
+            {'func': sig.butter, 'N': 4, 'fn': 4000, 'btype': 'low'},
+        ],
+    }
 }
 
 def grouper(n, iterable):
@@ -76,13 +78,14 @@ def normalize(biquads, fnorm, fs=FS):
 
 def main():
     bqsets = {}
-    for fls in filtersets:
-        biquads = make_biquads(filtersets[fls])
-        normalize(biquads, 1500)
-        bqsets[fls] = biquads.tolist()
+    for name, filtersets in filtergroups:
+        for fls in filtersets:
+            biquads = make_biquads(filtersets[fls])
+            normalize(biquads, 1500)
+            bqsets[fls] = biquads.tolist()
 
-    with open('biquads.json', 'w') as f:
-        json.dump(bqsets, f, indent=2)
+        with open(name + '.json', 'w') as f:
+            json.dump(bqsets, f, indent=2)
 
 if __name__ == '__main__':
     main()

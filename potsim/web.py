@@ -2,8 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import flask as fl
 
-import aio
-import filters
+from . import filters
 
 app = fl.Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
