@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import json
-import os.path
+import os.path as op
 
 import six
 import numpy as np
@@ -10,14 +10,13 @@ import scipy.io.wavfile as sciwav
 
 MAXINT16 = 2**15 - 1
 FS = 44100
+COEFF_DIR = op.join(op.dirname(op.abspath(__file__)), 'coeffs')
 
 def normalize(data, maxamp=1):
     data *= maxamp / max(abs(data))
 
-COEFF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'coeffs')
-
 def load_coeffs(fname):
-    with open(os.path.join(COEFF_DIR, fname)) as f:
+    with open(op.join(COEFF_DIR, fname)) as f:
         return json.load(f)
 
 POTS_COEFFS = load_coeffs('pots.json')
@@ -57,6 +56,7 @@ def pots(data, snr=30):
 
     return data
 
+
 class DigitalStreamFilter(object):
     mimes = {
         'wav': 'audio/vnd.wave',
@@ -65,13 +65,14 @@ class DigitalStreamFilter(object):
     }
     output_suffix = 'filtered'
 
-    def __init__(self, stream, dtype=None, filename=None):
+    def __init__(self, data=None, stream=None, filename=None, dtype=None):
         if dtype is None and filename is None:
             try:
                 # werkzeug.FileStorage has 'filename', python files have 'name'
                 filename = getattr(stream, 'filename', getattr(stream, 'name'))
             except AttributeError:
-                raise ValueError("Can't determine type from stream. Provide dtype or filename to infer type.")
+                raise ValueError("Can't determine type from stream. "
+                        "Provide dtype or filename to infer type.")
 
         if dtype is None:
             dtype = filename.split('.')[-1]
@@ -79,7 +80,13 @@ class DigitalStreamFilter(object):
         self.dtype = dtype
         self.filename = filename
 
-        self.load(stream)
+        if data is not None:
+            self.data = np.array(data)
+        elif stream is not None:
+            self.load(stream)
+        else:
+            with open(filename, 'rb') as stream:
+                self.load(stream)
 
     def load(self, stream):
         dispatcher = {
@@ -108,10 +115,12 @@ class DigitalStreamFilter(object):
         }[dtype](stream)
 
     def suggested_name(self):
-        parts = self.filename.split('.')
-        parts.insert(-1, self.output_suffix)
-        newname = '.'.join(parts)
-        return newname
+        parts = self.filename.split('.')[:-1]
+        parts.extend([self.output_suffix, self.dtype])
+        return '.'.join(parts)
+
+    def mimetype(self):
+        return self.mimes[self.dtype]
 
     def _load_wave(self, stream):
         rate, data = sciwav.read(stream)
@@ -121,7 +130,7 @@ class DigitalStreamFilter(object):
         return np.loadtxt(stream, dtype='int16')
 
     def _load_json(self, stream):
-        return json.load(stream)
+        return np.array(json.load(stream))
 
     def _dump_wave(self, stream):
         sciwav.write(stream, FS, self.data)
@@ -130,11 +139,11 @@ class DigitalStreamFilter(object):
         np.savetxt(stream, self.data, fmt='%d')
 
     def _dump_json(self, stream):
-        json.dump(self.data.tolist(), stream)
+        json.dump({'data': self.data.tolist(), 'rate': FS}, stream)
 
 
 class POTSFilter(DigitalStreamFilter):
     output_suffix = 'pots-filtered'
 
-    def process(self):
-        self.data = pots(self.data)
+    def process(self, *args, **kwargs):
+        self.data = pots(self.data, *args, **kwargs)
