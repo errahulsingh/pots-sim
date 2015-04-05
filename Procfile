@@ -1,1 +1,1 @@
-web: gunicorn potsim.web:app
+web: gunicorn potsweb:app
