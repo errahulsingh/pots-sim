@@ -21,7 +21,10 @@ def load_coeffs(fname):
 
 POTS_COEFFS = load_coeffs('pots.json')
 
-def pots(data, snr=30):
+def pots(data, snr=30, seed=None):
+    if seed is not None:
+        np.random.seed(seed)
+
     # ensure mono
     if data.ndim != 1:
         data = data[:,0]
@@ -79,6 +82,7 @@ class DigitalStreamFilter(object):
 
         self.dtype = dtype
         self.filename = filename
+        self.json_extra = {}
 
         if data is not None:
             self.data = np.array(data)
@@ -102,7 +106,7 @@ class DigitalStreamFilter(object):
 
         self.data = np.array(data)
 
-    def process(self):
+    def process(self, *args, **kwargs):
         pass
 
     def dump(self, stream, dtype=None):
@@ -130,7 +134,10 @@ class DigitalStreamFilter(object):
         return np.loadtxt(stream, dtype='int16')
 
     def _load_json(self, stream):
-        return np.array(json.load(stream))
+        json_data = json.load(stream)
+        data = json_data.pop('data')
+        self.json_extra = json_data
+        return np.array(data)
 
     def _dump_wave(self, stream):
         sciwav.write(stream, FS, self.data)

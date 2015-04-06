@@ -25,7 +25,8 @@ def pots_processor_json():
         except TypeError as e:
             return fl.jsonify({'error': str(e)}), 400
 
-        pfilt.process()
+        kwa = {k: v for k, v in pfilt.json_extra.items() if k in ('snr', 'seed')}
+        pfilt.process(**kwa)
 
         return fl.jsonify(data=pfilt.data.tolist(), rate=potsim.filters.FS)
 
