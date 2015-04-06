@@ -134,10 +134,7 @@ class DigitalStreamFilter(object):
         return np.loadtxt(stream, dtype='int16')
 
     def _load_json(self, stream):
-        json_data = json.load(stream)
-        data = json_data.pop('data')
-        self.json_extra = json_data
-        return np.array(data)
+        return np.array(json.load(stream))
 
     def _dump_wave(self, stream):
         sciwav.write(stream, FS, self.data)

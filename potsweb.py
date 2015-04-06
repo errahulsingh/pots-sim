@@ -18,14 +18,15 @@ def root():
 @app.route('/pots/json', methods=['GET', 'POST'])
 def pots_processor_json():
     if fl.request.method == 'POST':
+        json_data = fl.request.get_json(cache=False)
         try:
             pfilt = potsim.POTSFilter(
-                    data=fl.request.get_json(cache=False),
+                    data=json_data['data'],
                     dtype='json')
         except TypeError as e:
             return fl.jsonify({'error': str(e)}), 400
 
-        kwa = {k: v for k, v in pfilt.json_extra.items() if k in ('snr', 'seed')}
+        kwa = {k: v for k, v in json_data.items() if k in ('snr', 'seed')}
         pfilt.process(**kwa)
 
         return fl.jsonify(data=pfilt.data.tolist(), rate=potsim.filters.FS)

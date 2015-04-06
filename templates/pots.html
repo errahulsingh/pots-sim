@@ -33,7 +33,11 @@
 
 <h3>JSON</h3>
 <ul>
-  <li><code>POST</code> a 1-D array of numbers to <code>/pots/json</code>.</li>
+  <li><code>POST</code> an object with a <code>"data"</code> field containing a 1-D array of numbers to <code>/pots/json</code>. Optional fields:</li>
+  <ul>
+    <li><code>"snr"</code> can take a number (in dB) to control the signal to noise ratio</li>
+    <li><code>"seed"</code> can take a number to fix the PRNG seed</li>
+  </ul>
   <li>Reply is an object with a <code>"data"</code> field which hopefully has what you want.</li>
 </ul>
 
