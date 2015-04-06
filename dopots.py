@@ -14,6 +14,10 @@ def main():
         help='Input file.  Type inferred from extension.')
     parser.add_argument('-o', '--outtype', choices=['wav', 'txt'],
         help='Override output type')
+    parser.add_argument('-r', '--seed', type=int,
+        help='Fixed random seed if provided; integer')
+    parser.add_argument('-s', '--snr', type=float, default=30,
+        help='Approximate signal to noise radio in dB; float. Default: 30')
 
     args = parser.parse_args()
 
@@ -23,7 +27,7 @@ def main():
         print(str(e), file=sys.stderr)
         sys.exit(1)
 
-    pfilt.process()
+    pfilt.process(seed=args.seed, snr=args.snr)
 
     if args.outtype:
         pfilt.dtype = args.outtype
