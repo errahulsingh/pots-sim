@@ -2,7 +2,6 @@
 {% block title %}POTS Simulator{% endblock %}
 {% block body %}
 <h1>Plain Old Telephone Service (POTS) Simulator</h1>
-<p><a href="https://github.com/nicktimko/pots-sim/">Source</a></p>
 <hr>
 <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
   <div class="form-group">
@@ -15,7 +14,7 @@
     <label for="snr" class="col-sm-2 control-label">Signal to Noise Ratio</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" name="snr" id="snr" value="30" size="4" maxlength="4">
-      <p class="help-block">Value in dB. Lower is noisier. Approximate.</p>
+      <p class="help-block">Value in dB. Approximate. Lower is noisier. Default: 30.</p>
     </div>
   </div>
   <div class="form-group">
@@ -35,12 +34,12 @@
 <h2>Input Requirements</h2>
 <ul>
   <li>32 MB maximum</li>
+  <li>44.1 kHz sample rate (blindly assumed for all input formats: if yours is different, you will receive incorrect results)</li>
 </ul>
 
 <h3>WAV</h3>
 <ul>
   <li>File must end with <code>.wav</code></li>
-  <li>44.1 kHz sample rate (blindly assumed)</li>
   <li>Mono/1-channel</li>
   <li>16-bit linear</li>
 </ul>
@@ -55,10 +54,26 @@
 <ul>
   <li><code>POST</code> an object with a <code>"data"</code> field containing a 1-D array of numbers to <code>/pots/json</code>. Optional fields:</li>
   <ul>
-    <li><code>"snr"</code> can take a number (in dB) to control the signal to noise ratio</li>
+    <li><code>"snr"</code> can take a number (in dB) to control the signal to noise ratio (default: 30)</li>
     <li><code>"seed"</code> can take a number to fix the PRNG seed</li>
   </ul>
   <li>Reply is an object with a <code>"data"</code> field which hopefully has what you want.</li>
+  <ul>
+    <li><code>"seed"</code> is also provided for repeatability</li>
+  </ul>
 </ul>
 
+<h2>Output Specification</h2>
+<ul>
+  <li>Input signal band-pass filtered to approximately 300 Hz to 3400 Hz. (See Bode plot below and/or <a href="https://github.com/nicktimko/pots-sim/tree/master/potsim/coeffs">coefficients</a> for details)</li>
+  <ul>
+    <li>FIR filters are used so phase delay is non-linear.</li>
+  </ul>
+  <li>Band-limited white noise added at specified level.</li>
+  <li>Identical length/number of samples as input.</li>
+</ul>
+
+<img src="//raw.githubusercontent.com/nicktimko/pots-sim/master/docs/pots-bodeplot.png" class="img-responsive center-block">
+
+<a href="https://github.com/nicktimko/pots-sim"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
 {% endblock %}

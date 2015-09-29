@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function
 
 import io
+import random
 
 import flask as fl
 
@@ -27,9 +28,12 @@ def pots_processor_json():
             return fl.jsonify({'error': str(e)}), 400
 
         kwa = {k: v for k, v in json_data.items() if k in ('snr', 'seed')}
+        seed = kwa.setdefault('seed', random.randint(10000, 99999)) #
         pfilt.process(**kwa)
 
-        return fl.jsonify(data=pfilt.data.tolist(), rate=potsim.filters.FS)
+        return fl.jsonify(data=pfilt.data.tolist(),
+                          rate=potsim.filters.FS,
+                          seed=seed)
 
     else:
         return fl.redirect('/pots')

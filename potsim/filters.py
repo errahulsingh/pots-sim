@@ -38,9 +38,9 @@ def pots(data, snr=30, seed=None):
     normalize(data)
 
     # pad start and end
-    leader_len = np.random.randint(0.1 * FS, 0.4 * FS)
-    trailer_len = 0.5 * FS - leader_len
-    data = np.concatenate([np.zeros(leader_len), data, np.zeros(trailer_len)])
+    #leader_len = np.random.randint(0.1 * FS, 0.4 * FS)
+    #trailer_len = 0.5 * FS - leader_len
+    #data = np.concatenate([np.zeros(leader_len), data, np.zeros(trailer_len)])
 
     # do filtering
     for b, a in POTS_COEFFS['signal']:
@@ -107,7 +107,7 @@ class DigitalStreamFilter(object):
         self.data = np.array(data)
 
     def process(self, *args, **kwargs):
-        pass
+        raise NotImplementedError('abstract method')
 
     def dump(self, stream, dtype=None):
         if dtype is None:
