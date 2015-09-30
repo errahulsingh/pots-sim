@@ -12,11 +12,7 @@ app = fl.Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
 app.debug = True
 
-@app.route('/')
-def root():
-    return fl.render_template('root.html')
-
-@app.route('/pots/json', methods=['GET', 'POST'])
+@app.route('/json', methods=['GET', 'POST'])
 def pots_processor_json():
     if fl.request.method == 'POST':
         json_data = fl.request.get_json(cache=False)
@@ -36,9 +32,9 @@ def pots_processor_json():
                           seed=seed)
 
     else:
-        return fl.redirect('/pots')
+        return fl.redirect('/')
 
-@app.route('/pots', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def pots_processor():
     if fl.request.method == 'POST':
         try:
