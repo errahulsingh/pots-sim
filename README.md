@@ -8,7 +8,8 @@ requests.
 
 ## Modem Demo
 
-See [this notebook][ookdemo].
+See [this notebook][ookdemo] ([also on GH][ookgh], but the audio samples don't
+show).
 
 ## Heroku Details
 
@@ -18,6 +19,7 @@ Uses [custom buildpack][scipypack] to get SciPy working (requires 2.7.9 runtime)
 
 
 [scipypack]: https://github.com/thenovices/heroku-buildpack-scipy
-[webservice]: https://alpine-cupcake-2461.herokuapp.com/pots
+[webservice]: https://simphone.herokuapp.com/
 [potsbode]: https://github.com/nicktimko/pots-sim/raw/master/docs/pots-bodeplot.png
-[ookdemo]: https://github.com/nicktimko/pots-sim/blob/master/OOK_simple_demo.ipynb
+[ookdemo]: https://nbviewer.jupyter.org/github/nicktimko/pots-sim/blob/master/OOK_simple_demo.ipynb
+[ookgh]: https://github.com/nicktimko/pots-sim/blob/master/OOK_simple_demo.ipynb

@@ -30,50 +30,111 @@
     </div>
   </div>
 </form>
-<hr>
-<h2>Input Requirements</h2>
-<ul>
-  <li>32 MB maximum</li>
-  <li>44.1 kHz sample rate (blindly assumed for all input formats: if yours is different, you will receive incorrect results)</li>
-</ul>
 
-<h3>WAV</h3>
-<ul>
-  <li>File must end with <code>.wav</code></li>
-  <li>Mono/1-channel</li>
-  <li>16-bit linear</li>
-</ul>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2 class="panel-title">
+      <a data-toggle="" data-target="#inputspec" href="#">
+        Input Requirements
+      </a>
+    </h2>
+  </div>
+  <div id="inputspec" class="panel-collapse collapse in">
+    <div class="panel-body">
+      <ul>
+        <li>32 MB maximum</li>
+        <li>44.1 kHz sample rate (blindly assumed for all input formats: if yours is different, the filter will given strange results</li>
+      </ul>
 
-<h3>Text</h3>
-<ul>
-  <li>File must end with <code>.txt</code></li>
-  <li>One number per line (they will be normalized and quantized to 16-bit)</li>
-</ul>
+      <h4>WAV</h4>
+      <ul>
+        <li>File must end with <code>.wav</code></li>
+        <li>Mono/1-channel</li>
+        <li>16-bit linear</li>
+      </ul>
 
-<h3>JSON</h3>
-<ul>
-  <li><code>POST</code> an object with a <code>"data"</code> field containing a 1-D array of numbers to <code>/pots/json</code>. Optional fields:</li>
-  <ul>
-    <li><code>"snr"</code> can take a number (in dB) to control the signal to noise ratio (default: 30)</li>
-    <li><code>"seed"</code> can take a number to fix the PRNG seed</li>
-  </ul>
-  <li>Reply is an object with a <code>"data"</code> field which hopefully has what you want.</li>
-  <ul>
-    <li><code>"seed"</code> is also provided for repeatability</li>
-  </ul>
-</ul>
+      <h4>Text</h4>
+      <ul>
+        <li>File must end with <code>.txt</code></li>
+        <li>One number per line (they will be normalized and quantized to 16-bit)</li>
+      </ul>
 
-<h2>Output Specification</h2>
-<ul>
-  <li>Input signal band-pass filtered to approximately 300 Hz to 3400 Hz. (See Bode plot below and/or <a href="https://github.com/nicktimko/pots-sim/tree/master/potsim/coeffs">coefficients</a> for details)</li>
-  <ul>
-    <li>FIR filters are used so phase delay is non-linear.</li>
-  </ul>
-  <li>Band-limited white noise added at specified level.</li>
-  <li>Identical length/number of samples as input.</li>
-</ul>
+      <h4>JSON</h4>
+      <ul>
+        <li><code>POST</code> an object with a <code>"data"</code> field containing a 1-D array of numbers to <code>/pots/json</code>. Optional fields:</li>
+        <ul>
+          <li><code>"snr"</code> can take a number (in dB) to control the signal to noise ratio (default: 30)</li>
+          <li><code>"seed"</code> can take a number to fix the PRNG seed</li>
+        </ul>
+        <li>Reply is an object with a <code>"data"</code> field which hopefully has what you want.</li>
+        <ul>
+          <li><code>"seed"</code> is also provided for repeatability</li>
+        </ul>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2 class="panel-title">
+      <a data-toggle="" data-target="#outputspec" href="#">
+        Output Specification
+      </a>
+    </h2>
+  </div>
+  <div id="outputspec" class="panel-collapse collapse in">
+    <div class="panel-body">
+      <ul>
+        <li>Same format as input (WAV, text or JSON)</li>
+        <li>Input signal band-pass filtered to approximately 300 Hz to 3400 Hz. (See Bode plot below and/or <a href="https://github.com/nicktimko/pots-sim/tree/master/potsim/coeffs">coefficients</a> for details)</li>
+        <ul>
+          <li>FIR filters are used so phase delay is non-linear.</li>
+        </ul>
+        <li>Band-limited white noise added at specified level.</li>
+        <li>Identical length/number of samples as input.</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-<img src="//raw.githubusercontent.com/nicktimko/pots-sim/master/docs/pots-bodeplot.png" class="img-responsive center-block">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2 class="panel-title">
+      <a data-toggle="collapse" data-target="#filterspec" href="#">
+        Filter Details
+      </a>
+    </h2>
+  </div>
+  <div id="filterspec" class="panel-collapse collapse">
+    <div class="panel-body">
+      <p>SNR of about 30 dB (<a href="http://www.tschmidt.com/writings/POTS_Modem_Impairments.htm">somewhat realistic</a>). Band-limited white noise, fixed seed.</p>
+
+      <h4>Signal</h4>
+      <p>Passband of roughly 300 to 3400 Hz with various rolloffs. The good-looking parameters I came up with are a combination of:</p>
+      <ul>
+        <li>2rd order Butterworth high-pass filter with 200 Hz knee</li>
+        <li>2rd order Butterworth high-pass filter with 300 Hz knee</li>
+        <li>8th order Chebyshev Type II low-pass filter with 3900 Hz knee and stop-band attenuation of 50 dB.</li>
+        <li>2nd order Butterworth low-pass filter with 5000 Hz knee</li>
+      </ul>
+
+      <h4>Noise</h4>
+      <p>White noise is also band-limited with a broader filter. Roughly &minus;50 dB unfiltered noise will also be added to attempt to wash out the pass-band ripples.</p>
+      <ul>
+        <li>2rd order Butterworth high-pass filter with 300 Hz knee</li>
+        <li>2th order Butterworth low-pass filter with 4000 Hz knee</li>
+        <li>4th order Chebyshev Type II low-pass filter with 4500 Hz knee and stop-band attenuation of 20 dB.</li>
+      </ul>
+
+      <h4>Other stuff</h4>
+      <ul>
+        <li>Filter poles/zeros are converted into parameters for a bunch of serial <a href="https://en.wikipedia.org/wiki/Digital_biquad_filter">biquad filters</a></li>
+        <li>Zero jitter (I don't think it matters relative to the noise/frequency bandwidth)</li>
+      </ul>
+      <img src="//raw.githubusercontent.com/nicktimko/pots-sim/master/docs/pots-bodeplot.png" class="img-responsive center-block">
+    </div>
+  </div>
+</div>
 
 <a href="https://github.com/nicktimko/pots-sim"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
 {% endblock %}
